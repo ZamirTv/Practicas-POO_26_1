@@ -1,25 +1,130 @@
+using System;
+
 using System.Collections;
+
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Unity.VisualScripting;
+
 using UnityEngine;
 
+
+
 public class ControlBola : MonoBehaviour
+
 {
+    public Transform CamaraPrincipal;
+
 
     public Rigidbody rb;
-    public float fuerzaDeLanzamiento = 100000000f;
+
+
+
+    //Variable para apuntar
+
+    public float velocidadDeApuntado = 10f;
+
+    public float limiteIzquierdo = -4f;
+
+    public float limiteDerecho = 6f;
+
+
+
+
+
+    public float fuerzaDeLanzamiento = 1000f;
+
+
+
+    private bool haSidoLanzada = false;
+
+
 
     // Start is called before the first frame update
+
     void Start()
+
     {
-        
+
+
+
     }
 
+
+
     // Update is called once per frame
+
     void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+
+    { //Expresion: mientras que haSidoLanzado sea falso puedes disparar
+
+        if (haSidoLanzada == false)
+
         {
-            rb.AddForce(Vector3.forward * fuerzaDeLanzamiento);
+
+            Apuntar();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+
+            {
+
+                Lanzar();
+
+            }
+
+
+
+        }
+
+
+
+    }
+
+
+
+    void Apuntar()
+
+    {
+
+        //1. leer un inpunt Horizontal de tipo axis te permite registrar 
+
+        //entradas con las teclas A,D, y Flecha izquierda y flecha derecha
+
+        float inputHorizontal = Input.GetAxis("Horizontal");
+
+
+
+        //2. mover la bola hacia los lados
+
+        transform.Translate(Vector3.right * inputHorizontal * velocidadDeApuntado * Time.deltaTime);
+
+
+
+        //3.Delimitar el movimiento de la bola 
+
+        Vector3 posicionActual = transform.position;
+
+        //transformposition me permite saber cual es la ubicacion de la bola
+
+        posicionActual.x = Mathf.Clamp(posicionActual.x, limiteIzquierdo, limiteDerecho);
+
+        transform.position = posicionActual;
+
+    }
+
+    void Lanzar()
+
+    {
+        haSidoLanzada = true;
+        rb.AddForce(Vector3.forward * fuerzaDeLanzamiento);
+
+        if(CamaraPrincipal != null)
+        {
+            CamaraPrincipal.SetParent(transform);
         }
     }
-}
+
+
+
+}// Bienvenidos a la entrada del infierno
+
